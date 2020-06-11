@@ -1,38 +1,80 @@
+body {
+  background: darkslategray;
+}
+
 .App {
+  width: 800px;
+  margin: 0 auto;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.search-container {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.search-input {
+  padding: 0.5rem;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+.search-filter {
+  padding: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.no-result {
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+table {
+  width: 800px;
+  background-color: #f1f1c1;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+table tr:nth-child(even) {
+  background-color: lightgrey;
+}
+
+table tr:nth-child(odd) {
+  background-color: lightgoldenrodyellow;
+}
+
+table th {
+  color: white;
+  background-color: darkslategrey;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.pagination .page-size {
+  color: lightgoldenrodyellow;
+  margin-right: 1rem;
+}
+
+.pagination .select {
+  padding: 0.25rem 0.5rem;
+}
+
+.pagination .current-page {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: white;
+  color: black;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  text-align: center;
+  line-height: 20px;
+}
+
+.pagination .prev-page a,
+.pagination .next-page a {
+  color: lightgoldenrodyellow;
+  text-decoration: none;
 }

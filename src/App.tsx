@@ -1,26 +1,204 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react'
+import axios, { AxiosResponse } from 'axios'
+import './App.css'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface IResult {
+  name: string
+  height: string
+  mass: string
+  hair_color: string
+  skin_color: string
+  eye_color: string
+  birth_year: string
+  gender: string
+  homeworld: string
+  films: string[]
+  species: string[]
+  vehicles: string[]
+  starships: string[]
+  created: string
+  edited: string
+  url: string
 }
 
-export default App;
+interface IData {
+  previous?: {
+    page: number
+    limit: number
+  }
+  next?: {
+    page: number
+    limit: number
+  }
+  results: IResult[]
+}
+
+function App() {
+  const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState('name')
+  const [pageSize, setPageSize] = useState(20)
+  const [results, setResults] = useState<IResult[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [prevPage, setPrevPage] = useState()
+  const [nextPage, setNextPage] = useState()
+  const [timer, setTimer] = useState<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => {
+    axios
+      .get(
+        `http://localhost:3000/characters?page=${currentPage}&limit=${pageSize}&filter=${filter}&search=${search}`
+      )
+      .then((response: AxiosResponse<IData>) => {
+        setResults(response.data.results)
+        if (response.data.previous) setPrevPage(response.data.previous.page)
+        else setPrevPage(null)
+        if (response.data.next) setNextPage(response.data.next.page)
+        else setNextPage(null)
+      })
+    // eslint-disable-next-line
+  }, [currentPage, pageSize])
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault()
+    const val = e.target.value
+    setCurrentPage(1)
+    setSearch(val)
+
+    if (timer) clearTimeout(timer)
+
+    const t = setTimeout(() => {
+      axios
+        .get(
+          `http://localhost:3000/characters?page=1&limit=${pageSize}&filter=${filter}&search=${val}`
+        )
+        .then((response: AxiosResponse<IData>) => {
+          setResults(response.data.results)
+          if (response.data.previous) setPrevPage(response.data.previous.page)
+          else setPrevPage(null)
+          if (response.data.next) setNextPage(response.data.next.page)
+          else setNextPage(null)
+        })
+    }, 500)
+
+    setTimer(t)
+  }
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    e.preventDefault()
+    setFilter(e.target.value)
+  }
+
+  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    e.preventDefault()
+    setPageSize(parseInt(e.target.value))
+    setCurrentPage(1)
+    setPrevPage(null)
+    setNextPage(null)
+    setSearch('')
+  }
+
+  const handlePreviousClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setCurrentPage(prevPage)
+  }
+
+  const handleNextClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setCurrentPage(nextPage)
+  }
+
+  return (
+    <div className="App">
+      <div className="search-container">
+        <input
+          type="search"
+          className="search-input"
+          value={search}
+          onChange={handleSearch}
+          placeholder={`Search by ${filter.split('_').join(' ')}`}
+        />
+        <select
+          className="search-filter"
+          value={filter}
+          onChange={handleFilterChange}>
+          <option value="" disabled>
+            Select filter
+          </option>
+          <option value="name">Name</option>
+          <option value="height">Height</option>
+          <option value="mass">Mass</option>
+          <option value="hair_color">Hair Color</option>
+          <option value="skin_color">Skin Color</option>
+          <option value="eye_color">Eye Color</option>
+          <option value="birth_year">Birth Year</option>
+        </select>
+      </div>
+      {results.length > 0 && (
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Height</th>
+              <th>Mass</th>
+              <th>Hair Color</th>
+              <th>Skin Color</th>
+              <th>Eye Color</th>
+              <th>Birth Year</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map(res => {
+              return (
+                <tr key={res.name}>
+                  <td>{res.name}</td>
+                  <td>{res.height}</td>
+                  <td>{res.mass}</td>
+                  <td>{res.hair_color}</td>
+                  <td>{res.skin_color}</td>
+                  <td>{res.eye_color}</td>
+                  <td>{res.birth_year}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      )}
+      {results.length === 0 && (
+        <div className="no-result">No results found.</div>
+      )}
+      <div className="pagination">
+        <div>
+          <span className="page-size">Search result number</span>
+          <select
+            className="select"
+            value={pageSize}
+            onChange={handlePageSizeChange}>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+        <div>
+          {prevPage && (
+            <span className="prev-page">
+              <a href="/#" onClick={handlePreviousClick}>
+                Previous
+              </a>
+            </span>
+          )}
+          <span className="current-page">{currentPage}</span>
+          {nextPage && (
+            <span className="next-page">
+              <a href="/#" onClick={handleNextClick}>
+                Next
+              </a>
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default App

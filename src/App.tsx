@@ -20,7 +20,6 @@ interface IData {
 
 function App() {
   const [search, setSearch] = useState('')
-  const [filter, setFilter] = useState('name')
   const [pageSize, setPageSize] = useState(20)
   const [results, setResults] = useState<IResult[]>([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -31,7 +30,7 @@ function App() {
   useEffect(() => {
     axios
       .get(
-        `http://localhost:3000/characters?page=${currentPage}&limit=${pageSize}&filter=${filter}&search=${search}`
+        `http://localhost:3000/characters?page=${currentPage}&limit=${pageSize}&search=${search}`
       )
       .then((response: AxiosResponse<IData>) => {
         setResults(response.data.results)
@@ -54,7 +53,7 @@ function App() {
     const t = setTimeout(() => {
       axios
         .get(
-          `http://localhost:3000/characters?page=1&limit=${pageSize}&filter=${filter}&search=${val}`
+          `http://localhost:3000/characters?page=1&limit=${pageSize}&search=${val}`
         )
         .then((response: AxiosResponse<IData>) => {
           setResults(response.data.results)
@@ -66,11 +65,6 @@ function App() {
     }, 500)
 
     setTimer(t)
-  }
-
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    e.preventDefault()
-    setFilter(e.target.value)
   }
 
   const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -100,23 +94,8 @@ function App() {
           className="search-input"
           value={search}
           onChange={handleSearch}
-          placeholder={`Search by ${filter.split('_').join(' ')}`}
+          placeholder="Type something..."
         />
-        <select
-          className="search-filter"
-          value={filter}
-          onChange={handleFilterChange}>
-          <option value="" disabled>
-            Select filter
-          </option>
-          <option value="name">Name</option>
-          <option value="height">Height</option>
-          <option value="mass">Mass</option>
-          <option value="hair_color">Hair Color</option>
-          <option value="skin_color">Skin Color</option>
-          <option value="eye_color">Eye Color</option>
-          <option value="birth_year">Birth Year</option>
-        </select>
       </div>
       {results.length > 0 && (
         <table>

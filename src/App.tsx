@@ -30,7 +30,7 @@ function App() {
   useEffect(() => {
     axios
       .get(
-        `http://localhost:3000/characters?page=${currentPage}&limit=${pageSize}&search=${search}`
+        `http://localhost:3000/patrols?page=${currentPage}&limit=${pageSize}&search=${search}`
       )
       .then((response: AxiosResponse<IData>) => {
         setResults(response.data.results)
@@ -53,7 +53,7 @@ function App() {
     const t = setTimeout(() => {
       axios
         .get(
-          `http://localhost:3000/characters?page=1&limit=${pageSize}&search=${val}`
+          `http://localhost:3000/patrols?page=1&limit=${pageSize}&search=${val}`
         )
         .then((response: AxiosResponse<IData>) => {
           setResults(response.data.results)

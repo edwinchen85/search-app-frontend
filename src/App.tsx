@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import axios, { AxiosResponse } from 'axios'
 import './App.css'
 
@@ -26,6 +26,9 @@ function App() {
   const [prevPage, setPrevPage] = useState<number | undefined>()
   const [nextPage, setNextPage] = useState<number | undefined>()
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout>>()
+  const [done, setDone] = useState(false)
+
+  const ref = useRef(false)
 
   useEffect(() => {
     axios
@@ -38,9 +41,16 @@ function App() {
         else setPrevPage(undefined)
         if (response.data.next) setNextPage(response.data.next.page)
         else setNextPage(undefined)
+
+        setDone(!done)
+      })
       })
     // eslint-disable-next-line
   }, [currentPage, pageSize])
+
+  useEffect(() => {
+    ref.current = done
+  }, [done])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
@@ -61,6 +71,9 @@ function App() {
           else setPrevPage(undefined)
           if (response.data.next) setNextPage(response.data.next.page)
           else setNextPage(undefined)
+
+          setDone(!done)
+        })
         })
     }, 500)
 
@@ -97,36 +110,41 @@ function App() {
           placeholder="Type something..."
         />
       </div>
-      {results.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Height</th>
-              <th>Mass</th>
-              <th>Hair Color</th>
-              <th>Skin Color</th>
-              <th>Eye Color</th>
-              <th>Birth Year</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map(res => {
-              return (
-                <tr key={res.name}>
-                  <td>{res.name}</td>
-                  <td>{res.height}</td>
-                  <td>{res.mass}</td>
-                  <td>{res.hair_color}</td>
-                  <td>{res.skin_color}</td>
-                  <td>{res.eye_color}</td>
-                  <td>{res.birth_year}</td>
-                </tr>
+      <div className="result-header">RESULT</div>
+      <div className="results" data-testid="results">
+        {results.length > 0 &&
+          results.map((res: IResult) => {
+            if (ref.current !== done) {
+              const startIndex = res.title.toLowerCase().indexOf(search)
+              const endIndex = startIndex + search.length
+              const keyword = res.title.slice(
+                startIndex,
+                startIndex + search.length
               )
-            })}
-          </tbody>
-        </table>
-      )}
+              const title =
+                res.title.slice(0, startIndex) +
+                '<span class="highlight">' +
+                keyword +
+                '</span>' +
+                res.title.slice(endIndex)
+              return (
+                <div className="result" key={res.id}>
+                  <strong
+                    className="title"
+                    dangerouslySetInnerHTML={{ __html: title }}></strong>
+                  <p className="description">{res.description}</p>
+                </div>
+              )
+            } else {
+              return (
+                <div className="result" key={res.id}>
+                  <strong className="title">{res.title}</strong>
+                  <p className="description">{res.description}</p>
+                </div>
+              )
+            }
+          })}
+      </div>
       {results.length === 0 && (
         <div className="no-result">No results found.</div>
       )}

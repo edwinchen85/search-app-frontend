@@ -3,32 +3,17 @@ import axios, { AxiosResponse } from 'axios'
 import './App.css'
 
 interface IResult {
-  name: string
-  height: string
-  mass: string
-  hair_color: string
-  skin_color: string
-  eye_color: string
-  birth_year: string
-  gender: string
-  homeworld: string
-  films: string[]
-  species: string[]
-  vehicles: string[]
-  starships: string[]
-  created: string
-  edited: string
-  url: string
+  id: number
+  title: string
+  description: string
 }
 
 interface IData {
   previous?: {
     page: number
-    limit: number
   }
   next?: {
     page: number
-    limit: number
   }
   results: IResult[]
 }

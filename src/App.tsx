@@ -23,8 +23,8 @@ function App() {
   const [pageSize, setPageSize] = useState(20)
   const [results, setResults] = useState<IResult[]>([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [prevPage, setPrevPage] = useState()
-  const [nextPage, setNextPage] = useState()
+  const [prevPage, setPrevPage] = useState<number | undefined>()
+  const [nextPage, setNextPage] = useState<number | undefined>()
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout>>()
 
   useEffect(() => {
@@ -35,9 +35,9 @@ function App() {
       .then((response: AxiosResponse<IData>) => {
         setResults(response.data.results)
         if (response.data.previous) setPrevPage(response.data.previous.page)
-        else setPrevPage(null)
+        else setPrevPage(undefined)
         if (response.data.next) setNextPage(response.data.next.page)
-        else setNextPage(null)
+        else setNextPage(undefined)
       })
     // eslint-disable-next-line
   }, [currentPage, pageSize])
@@ -58,9 +58,9 @@ function App() {
         .then((response: AxiosResponse<IData>) => {
           setResults(response.data.results)
           if (response.data.previous) setPrevPage(response.data.previous.page)
-          else setPrevPage(null)
+          else setPrevPage(undefined)
           if (response.data.next) setNextPage(response.data.next.page)
-          else setNextPage(null)
+          else setNextPage(undefined)
         })
     }, 500)
 
@@ -71,19 +71,19 @@ function App() {
     e.preventDefault()
     setPageSize(parseInt(e.target.value))
     setCurrentPage(1)
-    setPrevPage(null)
-    setNextPage(null)
+    setPrevPage(undefined)
+    setNextPage(undefined)
     setSearch('')
   }
 
   const handlePreviousClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    setCurrentPage(prevPage)
+    setCurrentPage(prevPage || 1)
   }
 
   const handleNextClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    setCurrentPage(nextPage)
+    setCurrentPage(nextPage || 1)
   }
 
   return (

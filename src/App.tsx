@@ -111,9 +111,10 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className="App" data-testid="App">
       <div className="search-container">
         <input
+          data-testid="search-input"
           type="search"
           className="search-input"
           value={search}

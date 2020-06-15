@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import axios, { AxiosResponse } from 'axios'
+import loader from './components/loader'
 import './App.css'
 
 interface IResult {
@@ -31,6 +32,7 @@ function App() {
   const ref = useRef(false)
 
   useEffect(() => {
+    loader.start()
     axios
       .get(
         `http://localhost:3000/patrols?page=${currentPage}&limit=${pageSize}&search=${search}`
@@ -43,7 +45,11 @@ function App() {
         else setNextPage(undefined)
 
         setDone(!done)
+        loader.close()
       })
+      .catch(err => {
+        console.error('error:', err)
+        loader.close()
       })
     // eslint-disable-next-line
   }, [currentPage, pageSize])
@@ -61,6 +67,7 @@ function App() {
     if (timer) clearTimeout(timer)
 
     const t = setTimeout(() => {
+      loader.start()
       axios
         .get(
           `http://localhost:3000/patrols?page=1&limit=${pageSize}&search=${val}`
@@ -73,7 +80,11 @@ function App() {
           else setNextPage(undefined)
 
           setDone(!done)
+          loader.close()
         })
+        .catch(err => {
+          console.error('error:', err)
+          loader.close()
         })
     }, 500)
 

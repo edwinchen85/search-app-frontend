@@ -23,9 +23,3 @@ test('Enter search input', async () => {
 
   expect(searchInput.value).toBe('br')
 })
-
-test('No results found', () => {
-  const { getByTestId } = render(<App />)
-  const resultsDiv = getByTestId('results')
-  expect(resultsDiv.childNodes.length).toBe(0)
-})
